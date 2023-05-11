@@ -68,11 +68,6 @@ namespace ReceptionSignage
                         return output;
                     }
                     output.Model.AddElement(imgRef);
-
-                    output.Model.AddElement(new Polyline(new Vector3(0, 0, 0), Vector3.YAxis * 10));
-                    output.Model.AddElement(new Polyline(new Vector3(0, 0, 0), Vector3.XAxis * 10));
-                    output.Model.AddElement(new Polyline(new Vector3(0, 0, 0), Vector3.ZAxis * 10));
-                    output.Model.AddElement(orientationGuideEdgeT);
                 }
             }
 
