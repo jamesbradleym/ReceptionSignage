@@ -58,6 +58,7 @@ namespace ReceptionSignage
                     var spaceBoundary = room.Boundary;
 
                     Line orientationGuideEdge = hasCore ? FindEdgeClosestTo(spaceBoundary.Perimeter, coreSegments) : hasWalls ? FindEdgeClosestTo(spaceBoundary.Perimeter, wallSegments) : FindEdgeAdjacentToSegments(spaceBoundary.Perimeter.Segments(), corridorSegments, out var wallCandidates);
+                    // offset image from edge to prevent plane overlapping
                     var moveVec = new Vector3((spaceBoundary.Perimeter.Centroid() - orientationGuideEdge.PointAt(0.5)).Unitized() * 0.01);
                     Line orientationGuideEdgeT = orientationGuideEdge.TransformedLine(new Transform(moveVec));
 
@@ -66,8 +67,12 @@ namespace ReceptionSignage
                     {
                         return output;
                     }
-
                     output.Model.AddElement(imgRef);
+
+                    output.Model.AddElement(new Polyline(new Vector3(0, 0, 0), Vector3.YAxis * 10));
+                    output.Model.AddElement(new Polyline(new Vector3(0, 0, 0), Vector3.XAxis * 10));
+                    output.Model.AddElement(new Polyline(new Vector3(0, 0, 0), Vector3.ZAxis * 10));
+                    output.Model.AddElement(orientationGuideEdgeT);
                 }
             }
 

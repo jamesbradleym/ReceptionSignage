@@ -54,7 +54,7 @@ namespace ReceptionSignage
         [Newtonsoft.Json.JsonProperty("Signage", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public InputData Signage { get; set; }
     
-        /// <summary>The Signage Default Height.</summary>
+        /// <summary>The Signage Default Height on Center.</summary>
         [Newtonsoft.Json.JsonProperty("Default Height", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Range(0.0D, double.MaxValue)]
         public double DefaultHeight { get; set; }
@@ -170,15 +170,15 @@ namespace ReceptionSignage
     
     {
         [Newtonsoft.Json.JsonConstructor]
-        public PositionValue(Transform @positionTransform)
+        public PositionValue(Transform @transform)
         {
             var validator = Validator.Instance.GetFirstValidatorForType<PositionValue>();
             if(validator != null)
             {
-                validator.PreConstruct(new object[]{ @positionTransform});
+                validator.PreConstruct(new object[]{ @transform});
             }
         
-            this.PositionTransform = @positionTransform;
+            this.Transform = @transform;
         
             if(validator != null)
             {
@@ -186,8 +186,8 @@ namespace ReceptionSignage
             }
         }
     
-        [Newtonsoft.Json.JsonProperty("Position Transform", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Transform PositionTransform { get; set; }
+        [Newtonsoft.Json.JsonProperty("Transform", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Transform Transform { get; set; }
     
     }
 }

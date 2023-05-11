@@ -46,7 +46,7 @@
       },
       "Default Height": {
         "type": "number",
-        "description": "The Signage Default Height.",
+        "description": "The Signage Default Height on Center.",
         "minimum": 0.0,
         "$hyparUnitType": "length"
       },
@@ -72,7 +72,7 @@
       },
       "paradigm": "edit",
       "schema": {
-        "Position Transform": {
+        "Transform": {
           "$hyparTransformElement": true,
           "$ref": "https://prod-api.hypar.io/schemas/Transform",
           "$hyparConstraints": {
