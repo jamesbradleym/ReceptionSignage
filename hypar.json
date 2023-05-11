@@ -1,0 +1,103 @@
+{
+  "$schema": "https://hypar.io/Schemas/Function.json",
+  "id": "a500df94-b426-499f-b2a5-3ef89461586a",
+  "name": "Reception Signage",
+  "description": "The Reception Signage function.",
+  "language": "C#",
+  "model_dependencies": [
+    {
+      "autohide": false,
+      "name": "Space Planning Zones",
+      "optional": false
+    },
+    {
+      "autohide": false,
+      "name": "Circulation",
+      "optional": true
+    },
+    {
+      "autohide": false,
+      "name": "Levels",
+      "optional": true
+    },
+    {
+      "name": "Core",
+      "optional": true
+    },
+    {
+      "name": "Walls",
+      "optional": true
+    }
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "Signage": {
+        "description": "The Signage Image.",
+        "type": "object",
+        "$hyparOrder": 0,
+        "$ref": "https://hypar.io/Schemas/InputData.json",
+        "$hyparFileTypes": [
+          "jpg",
+          "jpeg",
+          "png",
+          "pdf"
+        ]
+      },
+      "Default Height": {
+        "type": "number",
+        "description": "The Signage Default Height.",
+        "minimum": 0.0,
+        "$hyparUnitType": "length"
+      },
+      "Length": {
+        "type": "number",
+        "description": "The Signage Length.",
+        "minimum": 0.0,
+        "$hyparUnitType": "length"
+      },
+      "Flip": {
+        "type": "boolean",
+        "description": "Whether to Flip the Signage."
+      }
+    }
+  },
+  "overrides": {
+    "Position": {
+      "context": "[*discriminator=Elements.ModelImage]",
+      "identity": {
+        "Image Path": {
+          "type": "string"
+        }
+      },
+      "paradigm": "edit",
+      "schema": {
+        "Position Transform": {
+          "$hyparTransformElement": true,
+          "$ref": "https://prod-api.hypar.io/schemas/Transform",
+          "$hyparConstraints": {
+            "enableRotation": true,
+            "enableShear": false,
+            "rotationZ": 0,
+            "enablePosition": true
+          }
+        }
+      },
+      "verbs": {
+        "edit": "Reposition Image",
+        "revert": "Reset Image Position"
+      }
+    }
+  },
+  "element_types": [
+    "https://prod-api.hypar.io/schemas/SpaceBoundary",
+    "https://prod-api.hypar.io/schemas/LevelElements",
+    "https://prod-api.hypar.io/schemas/CirculationSegment",
+    "https://prod-api.hypar.io/schemas/LevelVolume",
+    "https://prod-api.hypar.io/schemas/ServiceCore",
+    "https://raw.githubusercontent.com/hypar-io/Schemas/master/WallByProfile.json"
+  ],
+  "repository_url": "https://github.com/hypar-io/function",
+  "last_updated": "0001-01-01T00:00:00",
+  "cli_version": "1.6.0"
+}
