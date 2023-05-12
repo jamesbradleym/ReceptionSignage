@@ -33,11 +33,6 @@ namespace ReceptionSignage
                 var corridors = lvl.Elements.OfType<CirculationSegment>();
                 var corridorSegments = corridors.SelectMany(p => p.Profile.Segments());
                 var receptionRmBoundaries = lvl.Elements.OfType<SpaceBoundary>().Where(z => z.Name == "Reception");
-                var levelVolumes = GetLevelVolumes<LevelVolume>(inputModels);
-                var levelVolume = levelVolumes.FirstOrDefault(l =>
-                    (lvl.AdditionalProperties.TryGetValue("LevelVolumeId", out var levelVolumeId) &&
-                        levelVolumeId as string == l.Id.ToString())) ??
-                        levelVolumes.FirstOrDefault(l => l.Name == lvl.Name);
 
                 var hasCore = inputModels.TryGetValue("Core", out var coresModel) && coresModel.AllElementsOfType<ServiceCore>().Any();
                 List<Line> coreSegments = new();
@@ -72,19 +67,6 @@ namespace ReceptionSignage
             }
 
             return output;
-        }
-        public static List<TLevelVolume> GetLevelVolumes<TLevelVolume>(Dictionary<string, Model> inputModels) where TLevelVolume : Element
-        {
-            var levelVolumes = new List<TLevelVolume>();
-            if (inputModels.TryGetValue("Levels", out var levelsModel))
-            {
-                levelVolumes.AddRange(levelsModel.AllElementsAssignableFromType<TLevelVolume>());
-            }
-            if (inputModels.TryGetValue("Conceptual Mass", out var massModel))
-            {
-                levelVolumes.AddRange(massModel.AllElementsAssignableFromType<TLevelVolume>());
-            }
-            return levelVolumes;
         }
 
         private static Line FindEdgeClosestTo(Polygon perimeter, List<Line> segments)
@@ -166,53 +148,6 @@ namespace ReceptionSignage
             }
             otherSegments = Enumerable.Range(0, allEdges.Count).Except(new[] { selectedIndex }).Select(i => allEdges[i]);
             return minSeg;
-        }
-
-        public static void InstancePositionOverrides(dynamic overrides, Model model)
-        {
-            var allElementInstances = model.AllElementsOfType<ElementInstance>().ToList();
-            if (allElementInstances.Count() == 0)
-            {
-                return;
-            }
-            foreach (var e in allElementInstances)
-            {
-                e.AdditionalProperties["OriginalLocation"] = e.Transform.Origin;
-                e.AdditionalProperties["gltfLocation"] = (e.BaseDefinition as ContentElement)?.GltfLocation;
-            }
-            if (overrides != null && overrides.FurnitureLocations != null)
-            {
-                foreach (var positionOverride in overrides.FurnitureLocations)
-                {
-                    IEnumerable<ElementInstance> elementInstances = allElementInstances;
-                    if (positionOverride.Identity.GltfLocation != null)
-                    {
-                        elementInstances = allElementInstances
-                            .Where(el => el.BaseDefinition is ContentElement contentElement
-                                         && contentElement.GltfLocation.Equals(positionOverride.Identity.GltfLocation));
-                    }
-                    // we use a cutoff so this override doesn't accidentally
-                    // apply to some other random element from a different
-                    // space. It would be better / more reliable if we could use an "add id" of
-                    // the space boundary these were created from.
-                    var matchingElement = elementInstances
-                        .Where(el => el.Transform.Origin.DistanceTo(positionOverride.Identity.OriginalLocation) < 2.0)
-                        .OrderBy(el => el.Transform.Origin.DistanceTo(positionOverride.Identity.OriginalLocation)).FirstOrDefault();
-                    if (matchingElement == null)
-                    {
-                        continue;
-                    }
-                    try
-                    {
-                        matchingElement.Transform.Matrix = positionOverride.Value.Transform.Matrix;
-                        Identity.AddOverrideIdentity(matchingElement, positionOverride);
-                    }
-                    catch
-                    {
-                        Console.WriteLine("failed to apply an override.");
-                    }
-                }
-            }
         }
     }
 }
